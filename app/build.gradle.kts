@@ -45,35 +45,47 @@ android {
 }
 
 dependencies {
-
+    // --- AndroidX Core and UI Components ---
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.activity.ktx)
+
+    // --- AndroidX Lifecycle Components (MVVM pattern) ---
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    // --- Navigation Components ---
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+
+    // --- WorkManager for Background Tasks ---
     implementation(libs.androidx.work.runtime.ktx)
+
+    // --- Testing Dependencies ---
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(libs.androidx.activity.ktx)
 
-    // retrofit
-    implementation(libs.glide)
+    // --- Retrofit & Networking Dependencies ---
     implementation(libs.retrofit)
     implementation(libs.retrofit2.converter.gson)
     implementation(libs.logging.interceptor)
 
-    // splashscreen
+    // --- Image Loading Library ---
+    implementation(libs.glide)
+
+    // --- Splash Screen ---
     implementation(libs.androidx.core.splashscreen)
 
+    // --- Data Persistence: Datastore and Room ---
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.jetbrains.kotlinx.coroutines.android)
-
     implementation(libs.androidx.room.runtime)
-    ksp(libs.room.compiler)
     implementation(libs.androidx.room.ktx)
+    ksp(libs.room.compiler)
+
+    // --- Kotlin Coroutines ---
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.jetbrains.kotlinx.coroutines.android) 
 }
