@@ -52,9 +52,9 @@ class EventRepository(
         }
     }
 
-    suspend fun searchEvent(keyword: String): Result<List<ListEventsItem>> {
+    suspend fun searchEvent(keyword: String, active: Int): Result<List<ListEventsItem>> {
         return try {
-            val response = apiService.searchEvent(keyword)
+            val response = apiService.searchEvent(keyword, active)
             if (response.isSuccessful) {
                 Result.success(response.body()?.listEvents ?: emptyList())
             } else {
