@@ -70,7 +70,7 @@ class UpcomingEventFragment : Fragment() {
                 mainViewModel.clearErrorMessage()
             }
 
-            mainViewModel.isLoading.observe(viewLifecycleOwner) {
+            mainViewModel.isLoadingUpcoming.observe(viewLifecycleOwner) {
                 showLoading(it, binding?.progressBar!!, binding?.rvUpcomingEvent!!) // Tambahkan recyclerView
             }
 

@@ -13,7 +13,6 @@ import com.example.submissionawal_aplikasidicodingevent.R
 import com.example.submissionawal_aplikasidicodingevent.databinding.FragmentHomeBinding
 import data.remote.response.ListEventsItem
 import utils.UiHandler.handleError
-import utils.UiHandler.showLoading
 import viewmodel.AdapterHorizontalEvent
 import viewmodel.AdapterVerticalEvent
 import viewmodel.MainViewModel
@@ -40,6 +39,17 @@ class HomeFragment : Fragment() {
         setupRecyclerViews()
         setupAdapters()
         observeViewModel()
+
+        // Pengecekan apakah data sudah ada atau belum di LiveData
+        if (mainViewModel.upcomingEvent.value == null) {
+            // Jika belum ada, fetch data upcoming events
+            mainViewModel.getUpcomingEvent()
+        }
+
+        if (mainViewModel.finishedEvent.value == null) {
+            // Jika belum ada, fetch data finished events
+            mainViewModel.getFinishedEvent()
+        }
 
         return requireNotNull(binding?.root) { "Binding is null!" }
     }
@@ -93,19 +103,26 @@ class HomeFragment : Fragment() {
 
     private fun observeViewModel() {
         binding?.apply {
+            // Observer untuk upcoming events
             mainViewModel.upcomingEvent.observe(viewLifecycleOwner) { listItems ->
                 setUpcomingEvent(listItems)
                 mainViewModel.clearErrorMessage()
             }
 
+            // Observer untuk finished events
             mainViewModel.finishedEvent.observe(viewLifecycleOwner) { listItems ->
                 setFinishedEvent(listItems)
                 mainViewModel.clearErrorMessage()
             }
 
-            // Observer untuk menangani loading
-            mainViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-                showLoading(isLoading)
+            // Observer untuk loading upcoming events
+            mainViewModel.isLoadingUpcoming.observe(viewLifecycleOwner) { isLoading ->
+                showLoadingUpcoming(isLoading)  // Pastikan menggunakan loading yang terpisah
+            }
+
+            // Observer untuk loading finished events
+            mainViewModel.isLoadingFinished.observe(viewLifecycleOwner) { isLoading ->
+                showLoadingFinished(isLoading)  // Pastikan menggunakan loading yang terpisah
             }
 
             mainViewModel.errorMessage.observe(viewLifecycleOwner) { errorMessage ->
@@ -123,6 +140,26 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun showLoadingUpcoming(isLoading: Boolean) {
+        if (isLoading) {
+            binding?.progressBar?.visibility = View.VISIBLE // Tampilkan ProgressBar untuk upcoming event
+            binding?.rvUpcomingEvent?.visibility = View.GONE // Sembunyikan RecyclerView upcoming saat loading
+        } else {
+            binding?.progressBar?.visibility = View.GONE // Sembunyikan ProgressBar setelah loading selesai
+            binding?.rvUpcomingEvent?.visibility = View.VISIBLE // Tampilkan RecyclerView upcoming setelah loading selesai
+        }
+    }
+
+    private fun showLoadingFinished(isLoading: Boolean) {
+        if (isLoading) {
+            binding?.progressBar?.visibility = View.VISIBLE // Tampilkan ProgressBar untuk finished event
+            binding?.rvFinishedEvent?.visibility = View.GONE // Sembunyikan RecyclerView finished saat loading
+        } else {
+            binding?.progressBar?.visibility = View.GONE // Sembunyikan ProgressBar setelah loading selesai
+            binding?.rvFinishedEvent?.visibility = View.VISIBLE // Tampilkan RecyclerView finished setelah loading selesai
+        }
+    }
+
     private fun setUpcomingEvent(listUpcomingEvent: List<ListEventsItem>) {
         val limitedList =
             if (listUpcomingEvent.size > 5) listUpcomingEvent.take(5) else listUpcomingEvent
@@ -133,18 +170,6 @@ class HomeFragment : Fragment() {
         val limitedList =
             if (listFinishedEvent.size > 5) listFinishedEvent.takeLast(5) else listFinishedEvent
         adapterVertical.submitList(limitedList)
-    }
-
-    private fun showLoading(isLoading: Boolean) {
-        if (isLoading) {
-            binding?.progressBar?.visibility = View.VISIBLE // Tampilkan ProgressBar
-            binding?.rvUpcomingEvent?.visibility = View.GONE // Sembunyikan RecyclerView saat loading
-            binding?.rvFinishedEvent?.visibility = View.GONE // Sembunyikan RecyclerView saat loading
-        } else {
-            binding?.progressBar?.visibility = View.GONE // Sembunyikan ProgressBar
-            binding?.rvUpcomingEvent?.visibility = View.VISIBLE // Tampilkan RecyclerView setelah loading selesai
-            binding?.rvFinishedEvent?.visibility = View.VISIBLE // Tampilkan RecyclerView setelah loading selesai
-        }
     }
 
     override fun onDestroyView() {

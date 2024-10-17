@@ -71,7 +71,7 @@ class FavoriteFragment : Fragment() {
                 mainViewModel.clearErrorMessage()
             }
 
-            mainViewModel.isLoading.observe(viewLifecycleOwner) {
+            mainViewModel.isLoadingFavorite.observe(viewLifecycleOwner) {
                 showLoading(it, binding?.progressBar!!, binding?.rvFavoriteEvent!!) // Tambahkan recyclerView
             }
 

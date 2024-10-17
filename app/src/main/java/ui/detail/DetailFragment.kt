@@ -90,7 +90,7 @@ class DetailFragment : Fragment() {
             }
         }
 
-        mainViewModel.isLoading.observe(viewLifecycleOwner) {
+        mainViewModel.isLoadingDetail.observe(viewLifecycleOwner) {
             showLoading(it)
         }
 

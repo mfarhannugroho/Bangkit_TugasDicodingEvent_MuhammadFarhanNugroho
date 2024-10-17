@@ -78,7 +78,7 @@ class FinishedEventFragment : Fragment() {  // Hapus <MainViewModel> yang tidak 
 
     private fun observeViewModel() {
         // Pastikan MainViewModel memiliki LiveData isLoading, finishedEvent, dan searchEvent
-        mainViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+        mainViewModel.isLoadingFinished.observe(viewLifecycleOwner) { isLoading ->
             showLoading(isLoading)
         }
 

@@ -20,8 +20,20 @@ class MainViewModel(
     val errorMessage: LiveData<String?> = _errorMessage
 
     // LiveData untuk status loading
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
+    private val _isLoadingUpcoming = MutableLiveData<Boolean>()
+    val isLoadingUpcoming: LiveData<Boolean> = _isLoadingUpcoming
+
+    private val _isLoadingFinished = MutableLiveData<Boolean>()
+    val isLoadingFinished: LiveData<Boolean> = _isLoadingFinished
+
+    private val _isLoadingDetail = MutableLiveData<Boolean>()
+    val isLoadingDetail: LiveData<Boolean> = _isLoadingDetail
+
+    private val _isLoadingSearch = MutableLiveData<Boolean>()
+    val isLoadingSearch: LiveData<Boolean> = _isLoadingSearch
+
+    private val _isLoadingFavorite = MutableLiveData<Boolean>()
+    val isLoadingFavorite: LiveData<Boolean> = _isLoadingFavorite
 
     // LiveData untuk event upcoming dan finished
     private val _upcomingEvent = MutableLiveData<List<ListEventsItem>>()
@@ -51,64 +63,78 @@ class MainViewModel(
 
     // Fungsi untuk mendapatkan event upcoming
     fun getUpcomingEvent() {
-        _isLoading.value = true
+        _isLoadingUpcoming.value = true  // Set loading upcoming menjadi true
         viewModelScope.launch {
-            val result = eventRepository.getUpcomingEvent()
-            _isLoading.value = false
-            result.onSuccess {
-                _upcomingEvent.value = it
-                clearErrorMessage()
-            }.onFailure {
-                _errorMessage.value = it.message
+            try {
+                val result = eventRepository.getUpcomingEvent()
+                result.onSuccess {
+                    _upcomingEvent.value = it
+                    clearErrorMessage()
+                }.onFailure {
+                    _errorMessage.value = it.message
+                }
+            } finally {
+                _isLoadingUpcoming.value = false  // Set loading upcoming menjadi false setelah selesai
             }
         }
     }
 
     // Fungsi untuk mendapatkan event finished
     fun getFinishedEvent() {
-        _isLoading.value = true
+        _isLoadingFinished.value = true  // Set loading finished menjadi true
         viewModelScope.launch {
-            val result = eventRepository.getFinishedEvent()
-            _isLoading.value = false
-            result.onSuccess {
-                _finishedEvent.value = it
-                clearErrorMessage()
-            }.onFailure {
-                _errorMessage.value = it.message
+            try {
+                val result = eventRepository.getFinishedEvent()
+                result.onSuccess {
+                    _finishedEvent.value = it
+                    clearErrorMessage()
+                }.onFailure {
+                    _errorMessage.value = it.message
+                }
+            } finally {
+                _isLoadingFinished.value = false  // Set loading finished menjadi false setelah selesai
             }
         }
     }
 
     // Fungsi untuk mendapatkan detail event
+    // Fungsi untuk mendapatkan detail event
     fun getDetailEvent(id: Int) {
-        _isLoading.value = true
+        _isLoadingDetail.value = true  // Set loading detail menjadi true sebelum fetching
         viewModelScope.launch {
-            val result = eventRepository.getDetailEvent(id)
-            _isLoading.value = false
-            result.onSuccess {
-                _detailEvent.value = it
-                clearErrorMessage()
-            }.onFailure {
-                _errorMessage.value = it.message
+            try {
+                val result = eventRepository.getDetailEvent(id)
+                result.onSuccess {
+                    _detailEvent.value = it
+                    clearErrorMessage()
+                }.onFailure {
+                    _errorMessage.value = it.message
+                }
+            } finally {
+                _isLoadingDetail.value = false  // Set loading detail menjadi false setelah fetching selesai
             }
         }
     }
+
 
     // Fungsi untuk melakukan pencarian event dengan parameter active
+    // Fungsi untuk melakukan pencarian event dengan parameter active
     fun searchEvent(keyword: String, active: Int) {
-        _isLoading.value = true
+        _isLoadingSearch.value = true  // Set loading search menjadi true sebelum fetching
         viewModelScope.launch {
-            val result = eventRepository.searchEvent(keyword, active)  // Gunakan parameter active di sini
-            _isLoading.value = false
-            result.onSuccess {
-                _searchEvent.value = it
-                clearErrorMessage()
-            }.onFailure {
-                _errorMessage.value = it.message
+            try {
+                val result = eventRepository.searchEvent(keyword, active)  // Gunakan parameter active di sini
+                result.onSuccess {
+                    _searchEvent.value = it
+                    clearErrorMessage()
+                }.onFailure {
+                    _errorMessage.value = it.message
+                }
+            } finally {
+                _isLoadingSearch.value = false  // Set loading search menjadi false setelah fetching selesai
             }
         }
     }
-
 
     // Fungsi untuk menambahkan event ke favorit
     fun insertFavoriteEvent(event: FavoriteEvent) {
@@ -132,14 +158,18 @@ class MainViewModel(
 
     // Fungsi untuk mendapatkan semua event favorit
     fun getAllFavoriteEvent() {
-        _isLoading.value = true
+        _isLoadingFavorite.value = true  // Set loading favorit menjadi true sebelum fetching
         eventRepository.getAllFavoriteEvent().observeForever { favoriteEvents ->
-            Log.d("MainViewModel", "Favorite Events: $favoriteEvents")
-            _isLoading.value = false
-            _allFavoriteEvents.value = favoriteEvents
-            clearErrorMessage()
+            try {
+                Log.d("MainViewModel", "Favorite Events: $favoriteEvents")
+                _allFavoriteEvents.value = favoriteEvents
+                clearErrorMessage()
+            } finally {
+                _isLoadingFavorite.value = false  // Set loading favorit menjadi false setelah fetching selesai
+            }
         }
     }
+
 
     // Fungsi untuk mendapatkan event favorit berdasarkan ID
     fun getFavoriteEventById(eventId: Int): LiveData<FavoriteEvent> {
