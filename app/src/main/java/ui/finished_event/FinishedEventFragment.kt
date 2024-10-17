@@ -44,7 +44,7 @@ class FinishedEventFragment : Fragment() {  // Hapus <MainViewModel> yang tidak 
 
             searchView.editText.setOnEditorActionListener { _, _, _ ->
                 val keyword = searchView.text.toString()
-                mainViewModel.searchEvent(keyword)  // Memastikan MainViewModel memiliki fungsi searchEvent()
+                mainViewModel.searchEvent(keyword,0)
 
                 val currentText = searchView.text
 
